@@ -47,7 +47,8 @@ if st.button("Enhance Prompt ✨", type="primary"):
             
             full_prompt = f"{system_prompt}\n\nUser Input:\n{user_input}"
             
-            model = genai.GenerativeModel('gemini-1.5-flash')
+            # Using the correct current recommended model
+            model = genai.GenerativeModel('gemini-2.5-flash')
             
             with st.spinner("AI aapke prompt ko preschool standards ke mutabiq enhance kar raha hai... Please wait ✨"):
                 response = model.generate_content(full_prompt)
