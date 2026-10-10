@@ -30,7 +30,7 @@ st.markdown("Preschool worksheets aur educational materials ke liye high-detail 
 
 with st.sidebar:
     st.header("⚙️ Configuration")
-    # Using key="api_key_input" to persist API key across reruns and button clicks
+    # API key persistence using key parameter so it doesn't clear out on button clicks
     api_key = st.text_input("Google Gemini API Key enter karein:", type="password", key="api_key_input")
     st.markdown("[Free Gemini API Key yahan se lein](https://aistudio.google.com/)")
     
@@ -87,8 +87,8 @@ if st.button("Enhance Prompt Now ✨", type="primary"):
             
             full_prompt = f"{system_prompt}\n\nUser Input:\n{user_input}"
             
-            # Using standard flash model
-            model = genai.GenerativeModel('gemini-1.5-flash')
+            # Using the correct model name recommended by the system
+            model = genai.GenerativeModel('gemini-3.8-flash')
             
             with st.spinner("⚡ AI prompt ko professional standards ke mutabiq enhance kar raha hai..."):
                 response = model.generate_content(full_prompt)
