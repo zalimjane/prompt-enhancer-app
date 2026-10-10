@@ -28,15 +28,10 @@ st.markdown("""
 st.title("✨ Professional Prompt Enhancer & Layout Studio")
 st.markdown("Preschool worksheets aur educational materials ke liye high-detail AI prompts tayaar karne ka professional dashboard.")
 
-# Session State Initialization for API Key persistence
-if "api_key" not in st.session_state:
-    st.session_state["api_key"] = ""
-
 with st.sidebar:
     st.header("⚙️ Configuration")
-    user_api_key = st.text_input("Google Gemini API Key enter karein:", type="password", value=st.session_state["api_key"])
-    if user_api_key:
-        st.session_state["api_key"] = user_api_key
+    # Using key="api_key_input" to persist API key across reruns and button clicks
+    api_key = st.text_input("Google Gemini API Key enter karein:", type="password", key="api_key_input")
     st.markdown("[Free Gemini API Key yahan se lein](https://aistudio.google.com/)")
     
     st.markdown("---")
@@ -45,8 +40,6 @@ with st.sidebar:
         "Sample Template Select Karein:", 
         ["Apni marzi ka likhein...", "Trace and Match: Letter A", "Count and Match: Numbers", "Alphabet Formation Practice"]
     )
-
-api_key = st.session_state["api_key"]
 
 # Handle preset text insertion
 default_text = ""
@@ -94,8 +87,8 @@ if st.button("Enhance Prompt Now ✨", type="primary"):
             
             full_prompt = f"{system_prompt}\n\nUser Input:\n{user_input}"
             
-            # Using the correct model name recommended by Google API
-            model = genai.GenerativeModel('gemini-3.8-flash')
+            # Using standard flash model
+            model = genai.GenerativeModel('gemini-1.5-flash')
             
             with st.spinner("⚡ AI prompt ko professional standards ke mutabiq enhance kar raha hai..."):
                 response = model.generate_content(full_prompt)
