@@ -94,8 +94,8 @@ if st.button("Enhance Prompt Now ✨", type="primary"):
             
             full_prompt = f"{system_prompt}\n\nUser Input:\n{user_input}"
             
-            # Using the compatible and fast model variant
-            model = genai.GenerativeModel('gemini-1.5-flash-latest')
+            # Standard stable model
+            model = genai.GenerativeModel('gemini-1.5-flash')
             
             with st.spinner("⚡ AI lightning speed ke sath prompt enhance kar raha hai..."):
                 response = model.generate_content(full_prompt)
