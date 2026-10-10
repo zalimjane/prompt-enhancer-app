@@ -1,5 +1,5 @@
 import streamlit as st
-import openai
+import google.generativeai as genai
 
 st.set_page_config(page_title="Professional Prompt Enhancer", page_icon="✨", layout="wide")
 
@@ -8,7 +8,8 @@ st.write("Apne simple notes ko high-detail professional AI prompt mein convert k
 
 with st.sidebar:
     st.header("⚙️ Configuration")
-    api_key = st.text_input("OpenAI API Key enter karein:", type="password")
+    api_key = st.text_input("Google Gemini API Key enter karein:", type="password")
+    st.markdown("[Free Gemini API Key yahan se lein](https://aistudio.google.com/)")
 
 col1, col2 = st.columns(2)
 
@@ -21,26 +22,25 @@ with col2:
 
 if st.button("Enhance Prompt ✨", type="primary"):
     if not api_key:
-        st.error("Pehle sidebar mein OpenAI API Key enter karein.")
+        st.error("Pehle sidebar mein Google Gemini API Key enter karein.")
     elif not user_input.strip():
         st.warning("Input box mein text likhein.")
     else:
-        openai.api_key = api_key
-        system_prompt = """
-        You are an expert AI Prompt Engineer and Layout Designer specializing in Educational Materials, Preschool Worksheets, and Graphic Design.
-        YOUR TASK: Take raw notes, rough text outlines, or basic instructions provided by the user, and expand them into a complete, professional, production-ready AI image/layout prompt.
-        """
         try:
-            response = openai.chat.completions.create(
-                model="gpt-4o",
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_input}
-                ],
-                temperature=0.3
-            )
+            genai.configure(api_key=api_key)
+            
+            system_prompt = """
+            You are an expert AI Prompt Engineer and Layout Designer specializing in Educational Materials, Preschool Worksheets, and Graphic Design.
+            YOUR TASK: Take raw notes, rough text outlines, or basic instructions provided by the user, and expand them into a complete, professional, production-ready AI image/layout prompt.
+            """
+            
+            full_prompt = f"{system_prompt}\n\nUser Input:\n{user_input}"
+            
+            model = genai.GenerativeModel('gemini-1.5-flash')
+            response = model.generate_content(full_prompt)
+            
             with col2:
-                st.code(response.choices[0].message.content, language="text")
+                st.code(response.text, language="text")
                 st.success("Prompt enhance ho gaya!")
         except Exception as e:
             st.error(f"Error: {str(e)}")
