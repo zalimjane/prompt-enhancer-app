@@ -94,10 +94,10 @@ if st.button("Enhance Prompt Now ✨", type="primary"):
             
             full_prompt = f"{system_prompt}\n\nUser Input:\n{user_input}"
             
-            # Standard stable model
-            model = genai.GenerativeModel('gemini-1.5-flash')
+            # Using the correct model name recommended by Google API
+            model = genai.GenerativeModel('gemini-3.8-flash')
             
-            with st.spinner("⚡ AI lightning speed ke sath prompt enhance kar raha hai..."):
+            with st.spinner("⚡ AI prompt ko professional standards ke mutabiq enhance kar raha hai..."):
                 response = model.generate_content(full_prompt)
             
             with col2:
