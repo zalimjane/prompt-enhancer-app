@@ -30,7 +30,7 @@ if st.button("Enhance Prompt ✨", type="primary"):
         try:
             genai.configure(api_key=api_key)
             
-            # Master System Prompt for Preschool Worksheets & Tracing/Matching Layouts
+            # Master System Prompt based on Preschool Standards
             system_prompt = """
             You are an expert AI Prompt Engineer and Educational Materials Designer specializing in preschool workbooks, worksheets, tracing letters, and children's activity books.
             
@@ -47,8 +47,8 @@ if st.button("Enhance Prompt ✨", type="primary"):
             
             full_prompt = f"{system_prompt}\n\nUser Input:\n{user_input}"
             
-            # Using the correct current recommended model
-            model = genai.GenerativeModel('gemini-2.5-flash')
+            # Set to gemini-3.8-flash as required
+            model = genai.GenerativeModel('gemini-3.8-flash')
             
             with st.spinner("AI aapke prompt ko preschool standards ke mutabiq enhance kar raha hai... Please wait ✨"):
                 response = model.generate_content(full_prompt)
