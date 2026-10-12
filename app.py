@@ -62,21 +62,23 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# Fetching API Key securely from Streamlit Secrets
+# Fetching API Key securely from Streamlit Secrets or Fallback
+api_key = ""
 try:
-    api_key = st.secrets["GEMINI_API_KEY"]
+    if "GEMINI_API_KEY" in st.secrets:
+        api_key = st.secrets["GEMINI_API_KEY"]
 except Exception:
-    api_key = ""
+    pass
 
 # Sidebar Configuration Dashboard
 with st.sidebar:
     st.image("https://img.icons8.com/color/96/education.png", width=70)
     st.header("⚙️ Studio Control")
     
-    if api_key:
-        st.success("🔑 API Key Loaded Securely!")
+    if not api_key:
+        api_key = st.text_input("Enter Gemini API Key:", type="password", key="fallback_api_key", placeholder="AIzaSy...")
     else:
-        st.warning("⚠️ Secret Key not found in Streamlit settings.")
+        st.success("🔑 API Key Loaded Securely!")
     
     st.markdown("---")
     st.markdown("### 📚 Quick Worksheet Presets")
@@ -88,14 +90,14 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("### 📊 Studio Stats")
     st.metric(label="Engine Status", value="Online ⚡", delta="Gemini 3.8-Flash")
-    st.metric(label="Print Standards", value="Strict B&W", delta="Print-Ready")
+    st.metric(label="Color Mode", value="Dynamic (Auto)", delta="Smart Match")
 
 # Handle preset text insertion logic
 default_text = ""
 if preset_choice == "Trace and Match: Letter A":
     default_text = "Page 7 — Activity\nHeading: Trace and Match: Letter A\nInstruction: Trace the letters, then draw a line to match each letter to its picture.\nShow: Uppercase A and lowercase a with directional arrows. Match A to apple, B to ball, C to cat."
 elif preset_choice == "Count and Match: Numbers":
-    default_text = "Page 6 — Practice and Review\nHeading: Count and Match\nInstruction: Count the objects and match them to the correct number.\nShow: 3 rows with clear black-and-white objects (apples, pencils, stars)."
+    default_text = "Page 6 — Practice and Review\nHeading: Count and Match\nInstruction: Count the objects and match them to the correct number.\nShow: 3 rows with clear objects (apples, pencils, stars)."
 elif preset_choice == "Alphabet Formation Practice":
     default_text = "Page 4 — Tracing Worksheet\nHeading: Alphabet Formation\nInstruction: Trace the dotted letter guidelines.\nShow: 3 rows of dotted letters with starting dots and directional arrows."
 
@@ -108,7 +110,7 @@ with col1:
         "Enter your raw notes or outline:", 
         value=default_text, 
         height=380, 
-        placeholder="Type your outline here..."
+        placeholder="Type your outline here (mention if you want colorful or black and white)..."
     )
 
 with col2:
@@ -121,14 +123,14 @@ st.markdown("---")
 # Action Button & Execution Logic
 if st.button("Enhance Prompt Now ✨", type="primary"):
     if not api_key:
-        st.error("⚠️ GEMINI_API_KEY is missing in Streamlit Secrets.")
+        st.error("⚠️ Please provide your Gemini API Key.")
     elif not user_input.strip():
         st.warning("⚠️ Please provide rough outline notes in the input box.")
     else:
         try:
             genai.configure(api_key=api_key)
             
-            # Master System Prompt for Preschool Worksheets & Layouts
+            # Updated Master System Prompt allowing dynamic Color vs Black & White based on input
             system_prompt = """
             You are an expert AI Prompt Engineer and Educational Materials Designer specializing in preschool workbooks, worksheets, tracing letters, and children's activity books.
             
@@ -137,8 +139,8 @@ if st.button("Enhance Prompt Now ✨", type="primary"):
             STRICT RULES & FORMATTING TO FOLLOW IN THE GENERATED PROMPT:
             1. Layout Architecture: Ensure clear hierarchical sections (Header with title and instructions, Upper tracing section with dot guidelines/directional arrows, Lower matching/activity columns with generous whitespace).
             2. Typography & Text: Specify clean, large, bold, rounded sans-serif fonts with correct spelling, proper alignment, and no extra/malformed letters.
-            3. Style & Aesthetics: Clean preschool workbook design with crisp black outlines, rounded forms, consistent stroke weight, and simple cheerful illustrations. Strict black and white for economical home/classroom printing (no gray shading, no color fills, no gradients, no watermarks, no logos).
-            4. Negative Constraints: Explicitly rule out illegible text, crowded spacing, overlapping elements, colored fills, gray shadows, and decorative clutter.
+            3. Color & Style Adaptability: Carefully analyze the user's input. If the user requests or implies color (e.g., colourful, vibrant, bright colors), specify a cheerful, clean colorful palette with child-friendly illustrations. If the user specifies black and white or tracing/coloring outlines, use crisp black outlines on a clean white background. Match the user's intended color style dynamically.
+            4. Negative Constraints: Explicitly rule out illegible text, crowded spacing, overlapping elements, and decorative clutter.
             
             Expand the user's rough notes into a detailed, structured prompt maintaining these precise professional standards.
             """
@@ -147,7 +149,7 @@ if st.button("Enhance Prompt Now ✨", type="primary"):
             
             model = genai.GenerativeModel('gemini-3.8-flash')
             
-            with st.spinner("⚡ AI is engineering your professional print-ready worksheet prompt..."):
+            with st.spinner("⚡ AI is engineering your professional worksheet prompt..."):
                 response = model.generate_content(full_prompt)
             
             with col2:
